@@ -1,11 +1,11 @@
 import { useWeb3React } from '@web3-react/core'
 import { TransactionResponse } from '@ethersproject/providers'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGovernanceContract } from './useContract'
 import { useSingleCallResult, useSingleContractMultipleData } from '../state/multicall/hooks'
 import { calculateGasMargin } from 'utils'
-
-interface GovernanceContent {
+import { addMockList } from './useMock'
+export interface GovernanceContent {
   summary: string
   details: string
   agreeFor: string
@@ -35,6 +35,7 @@ export interface GovernanceData {
   voteAgainst: string
   totalVotes: string
   status?: StatusOption
+  m?: boolean
 }
 
 export function useGovernanceDetails(index: string) {
@@ -77,6 +78,11 @@ export function useGovernanceCount(): number | undefined {
 export function useGovernanceList(): { list: GovernanceData[] | undefined; loading: boolean } {
   const contact = useGovernanceContract()
   const proposeCount = useGovernanceCount()
+  const [first, setFirst] = useState(true)
+  useEffect(() => {
+    setTimeout(setFirst, 1000)
+  }, [])
+
   const proposeIndexes = []
   for (let i = 0; i < (proposeCount ?? 0); i++) {
     proposeIndexes.push([i])
@@ -131,7 +137,7 @@ export function useGovernanceList(): { list: GovernanceData[] | undefined; loadi
         .reverse(),
     [proposesListRes, proposesStatusRes]
   )
-  return { list, loading: isLoading.current }
+  return { list: isLoading.current && first ? [] : [...list, ...addMockList()], loading: isLoading.current }
 }
 
 export function useUserStaking(proposeid: string | number | undefined): Users {

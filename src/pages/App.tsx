@@ -40,6 +40,7 @@ import OptionCreation from './OptionCreation'
 import OptionExercise from './OptionExercise'
 import Governance from './Governance'
 import GovernancePageDetail from './Governance/GovernancePageDetail'
+import GovernancePageMDetail from './Governance/GovernancePageMDetail'
 // import WarningModal from 'components/Modal/WarningModal'
 
 const AppWrapper = styled.div`
@@ -124,6 +125,7 @@ export default function App() {
                 <Route exact strict path="/redeem/:optionTypeIndex" component={Redeem} />
                 <Route exact strict path="/governance" component={Governance} />
                 <Route exact strict path="/governance/detail/:governanceIndex" component={GovernancePageDetail} />
+                <Route exact strict path="/governance/mdetail/:governanceIndex" component={GovernancePageMDetail} />
                 <Route exact strict path="/info" component={Info} />
                 {/* <Route exact strict path="/exercise" component={Exercise} /> */}
                 {/* <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} /> */}

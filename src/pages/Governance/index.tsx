@@ -103,7 +103,7 @@ export const ProgressBar = styled.div<{ leftPercentage: string; isLarge?: boolea
 `
 const Synopsis = styled.div`
   width: 100%;
-  height: 54px;
+  height: 50px;
   font-size: 14px;
   overflow: hidden;
   margin-top: 4px;
@@ -144,7 +144,6 @@ export default function Governance() {
   const [isCreationOpen, setIsCreationOpen] = useState(false)
   const history = useHistory()
   const balance = useCurrencyBalance(account ?? undefined, GOVERNANCE_TOKEN)
-  const handleCardClick = useCallback(id => () => history.push('governance/detail/' + id), [history])
 
   const handleOpenCreation = useCallback(() => {
     setIsCreationOpen(true)
@@ -218,7 +217,15 @@ export default function Governance() {
         )}
         <ContentWrapper>
           {governanceList &&
-            governanceList.map(data => <GovernanceCard data={data} key={data.id} onClick={handleCardClick(data.id)} />)}
+            governanceList.map(data => (
+              <GovernanceCard
+                data={data}
+                key={data.id}
+                onClick={() =>
+                  data.m ? history.push('governance/mdetail/' + data.id) : history.push('governance/detail/' + data.id)
+                }
+              />
+            ))}
         </ContentWrapper>
         {/* <AlternativeDisplay count={governanceList ? governanceList.length : undefined} loading={loading} /> */}
       </Wrapper>
@@ -281,7 +288,7 @@ function GovernanceCard({
             <TYPE.small>{isAddress(creator) ? shortenAddress(creator) : creator}</TYPE.small>
           </div>
         </AutoColumn>
-        <Synopsis>{contents?.summary}</Synopsis>
+        <Synopsis>{contents?.summary || contents?.details}</Synopsis>
         <AutoColumn gap="12px" style={{ margin: '10px 0' }}>
           <RowBetween>
             <TYPE.smallGray>Votes For:</TYPE.smallGray>

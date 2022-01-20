@@ -210,7 +210,8 @@ function Web3StatusInner() {
           {/* {!hasPendingTransactions && connector && <StatusIcon connector={connector} />} */}
           {hasPendingTransactions ? (
             <RowBetween>
-              <Loader stroke={theme.text1} /> <Text style={{ marginLeft: '12px' }}>{pending?.length} Pending</Text>
+              <Loader stroke={theme.text1} />{' '}
+              <Text style={{ marginLeft: '12px', color: theme.text1 }}>{pending?.length} Pending</Text>
             </RowBetween>
           ) : (
             <>

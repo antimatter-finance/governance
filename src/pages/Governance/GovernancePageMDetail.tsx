@@ -12,7 +12,7 @@ import Card from 'components/Card'
 import TransactionConfirmationModal from 'components/TransactionConfirmationModal'
 import { SubmittedView } from 'components/ModalViews'
 import Modal from 'components/Modal'
-import { useGovernanceDetails, useUserStaking } from '../../hooks/useGovernanceDetail'
+import { useMockDetail, useMockUserStaking } from '../../hooks/useMock'
 import { CurrencyAmount, JSBI, TokenAmount } from '@uniswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import { GOVERNANCE_ADDRESS, GOVERNANCE_TOKEN, FACTORY_CHAIN_ID } from '../../constants'
@@ -138,11 +138,11 @@ export default function GovernancePageDetail({
   const [NeutralSubmitted, setNeutralSubmitted] = useState(false)
   const [voteValue, setVoteValue] = useState('')
   const history = useHistory()
-  const { data } = useGovernanceDetails(governanceIndex ?? '')
+  const data = useMockDetail(governanceIndex ?? '')
   const balance = useCurrencyBalance(account ?? undefined, GOVERNANCE_TOKEN)
   const contact = useGovernanceContract()
   const addTransaction = useTransactionAdder()
-  const userStaking = useUserStaking(governanceIndex)
+  const userStaking = useMockUserStaking(governanceIndex)
   const [submitType, setSubmitType] = useState(ConfirmType.Vote)
 
   const inputValue = useMemo(() => {
@@ -300,7 +300,7 @@ export default function GovernancePageDetail({
       event: () => {},
       disable: false
     }
-    if (data.status === StatusOption.Failed || data.status === StatusOption.Success) {
+    if (data?.status === StatusOption.Failed || data?.status === StatusOption.Success) {
       ret.text = <>Voting has ended</>
       ret.disable = true
       return ret
@@ -441,10 +441,10 @@ export default function GovernancePageDetail({
             <Box marginTop={'50px'}>
               <DirectionChangeWrapper style={{ gap: 20 }}>
                 <AutoColumn gap="28px" style={{ width: '100%' }}>
-                  <TYPE.body lineHeight="25px" textAlign="center" style={{ wordBreak: 'break-all' }}>
+                  <TYPE.body lineHeight="25px" textAlign="center">
                     {contents?.summary}
                   </TYPE.body>
-                  <TYPE.body lineHeight="25px" textAlign="center" style={{ wordBreak: 'break-all' }}>
+                  <TYPE.body lineHeight="25px" textAlign="center">
                     {contents?.details}
                   </TYPE.body>
                 </AutoColumn>
