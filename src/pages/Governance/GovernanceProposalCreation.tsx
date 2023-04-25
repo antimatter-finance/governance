@@ -1,4 +1,4 @@
-import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
+import { JSBI, Token, CurrencyAmount } from '@uniswap/sdk'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { X } from 'react-feather'
@@ -13,15 +13,13 @@ import { ButtonEmpty, ButtonPrimary, ButtonOutlinedPrimary } from 'components/Bu
 import { AutoColumn } from 'components/Column'
 import { TYPE } from 'theme'
 import TextInput from 'components/TextInput'
-import { useTokenBalance } from 'state/wallet/hooks'
+import { useETHBalances } from 'state/wallet/hooks'
 import TransactionConfirmationModal from 'components/TransactionConfirmationModal'
 import { SubmittedView } from 'components/ModalViews'
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback'
 import { tryParseAmount } from 'state/swap/hooks'
 import { useGovernanceCreation } from 'hooks/useGovernanceDetail'
-import { FACTORY_CHAIN_ID, GOVERNANCE_ADDRESS, MATTER_ADDRESS } from '../../constants'
-import { Dots } from 'components/swap/styleds'
+import { FACTORY_CHAIN_ID, MATTER_ADDRESS } from '../../constants'
 import Modal from 'components/Modal'
 import { Box } from '@material-ui/core'
 
@@ -85,17 +83,9 @@ export default function GovernanceProposalCreation({ onDismiss, isOpen }: { onDi
   const [txHash, setTxHash] = useState<string>('')
   const { chainId, account } = useWeb3React()
 
-  const balance: TokenAmount | undefined = useTokenBalance(
-    account ?? undefined,
-    chainId ? new Token(chainId, MATTER_ADDRESS, 18) : undefined
-  )
+  const balance: CurrencyAmount | undefined = useETHBalances([account || ''])[account || 0]
 
   const notEnoughBalance = !balance?.greaterThan(JSBI.BigInt(stakeAmount))
-
-  const [approval, approveCallback] = useApproveCallback(
-    tryParseAmount(JSBI.BigInt(stakeAmount).toString(), chainId ? new Token(chainId, MATTER_ADDRESS, 18) : undefined),
-    chainId ? GOVERNANCE_ADDRESS : undefined
-  )
 
   const handleStep = (step: number) => () => {
     setActiveStep(step)
@@ -152,9 +142,6 @@ export default function GovernanceProposalCreation({ onDismiss, isOpen }: { onDi
 
   const onCreate = useCallback(async () => {
     if (!governanceCreateCallback) return
-    if (approval !== ApprovalState.APPROVED) {
-      return
-    }
 
     const _span =
       activeStep !== 10 ? JSBI.BigInt((activeStep + 3) * 60 * 60 * 24).toString() : JSBI.BigInt(5 * 60).toString()
@@ -189,7 +176,7 @@ export default function GovernanceProposalCreation({ onDismiss, isOpen }: { onDi
         console.error('---->', error)
         // }
       })
-  }, [activeStep, addTransaction, approval, governanceCreateCallback, chainId, input])
+  }, [activeStep, addTransaction, governanceCreateCallback, chainId, input])
 
   const btnStatus = useMemo(() => {
     const ret = {
@@ -216,28 +203,11 @@ export default function GovernanceProposalCreation({ onDismiss, isOpen }: { onDi
       return ret
     }
 
-    if (approval !== ApprovalState.APPROVED) {
-      ret.text =
-        approval === ApprovalState.PENDING ? (
-          <>
-            Allow Amitmatter to use your Matter<Dots>Loading</Dots>
-          </>
-        ) : (
-          <>Allow Amitmatter to use your Matter</>
-        )
-      ret.disable = !!(approval === ApprovalState.PENDING)
-      ret.event = (e): void => {
-        e.preventDefault()
-        approveCallback()
-      }
-      return ret
-    }
-
     ret.text = <>Determine</>
     ret.event = () => {}
     ret.disable = false
     return ret
-  }, [notEnoughBalance, chainId, approval, approveCallback])
+  }, [notEnoughBalance, chainId])
 
   const createForm = useMemo(() => {
     if (formStep === FormSteps.description) {

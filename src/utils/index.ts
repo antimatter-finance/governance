@@ -4,7 +4,7 @@ import { AddressZero } from '@ethersproject/constants'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
-import { ROUTER_ADDRESS } from '../constants'
+import { GovChainId, ROUTER_ADDRESS } from '../constants'
 import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@uniswap/sdk'
 import { TokenAddressMap } from '../state/lists/hooks'
 import { tryParseAmount } from '../state/swap/hooks'
@@ -26,12 +26,18 @@ const ETHERSCAN_PREFIXES: { [chainId in ChainId]: string } = {
   42: 'kovan.'
 }
 
+const matterChainDomian: { [chainId in GovChainId]?: string } = {
+  [GovChainId.MATTER]: 'https://b2-explorer.antimatter.finance/'
+}
+
 export function getEtherscanLink(
   chainId: ChainId,
   data: string,
   type: 'transaction' | 'token' | 'address' | 'block'
 ): string {
-  const prefix = `https://${ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]}etherscan.io`
+  const prefix = matterChainDomian[chainId]
+    ? matterChainDomian[chainId]
+    : `https://${ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]}etherscan.io`
 
   switch (type) {
     case 'transaction': {

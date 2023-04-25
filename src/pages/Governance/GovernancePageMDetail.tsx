@@ -16,7 +16,7 @@ import { useMockDetail, useMockUserStaking } from '../../hooks/useMock'
 import { CurrencyAmount, JSBI, TokenAmount } from '@uniswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import { GOVERNANCE_ADDRESS, GOVERNANCE_TOKEN, FACTORY_CHAIN_ID } from '../../constants'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
+import { useETHBalances } from '../../state/wallet/hooks'
 import { useWeb3React } from '@web3-react/core'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
@@ -139,7 +139,7 @@ export default function GovernancePageDetail({
   const [voteValue, setVoteValue] = useState('')
   const history = useHistory()
   const data = useMockDetail(governanceIndex ?? '')
-  const balance = useCurrencyBalance(account ?? undefined, GOVERNANCE_TOKEN)
+  const balance = useETHBalances([account ?? undefined])[account || 0]
   const contact = useGovernanceContract()
   const addTransaction = useTransactionAdder()
   const userStaking = useMockUserStaking(governanceIndex)
@@ -148,6 +148,8 @@ export default function GovernancePageDetail({
   const inputValue = useMemo(() => {
     return tryParseAmount(voteValue, GOVERNANCE_TOKEN)
   }, [voteValue])
+
+  console.log(inputValue)
 
   const theme = useTheme()
 

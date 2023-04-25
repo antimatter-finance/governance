@@ -167,11 +167,13 @@ export function useGovernanceCreation() {
   const method: (...args: any) => Promise<TransactionResponse> = governanceContract?.propose
   return useMemo(() => {
     if (!estimate) return undefined
-    return (args: any[]) =>
-      estimate(...args, {}).then(estimatedGasLimit =>
+    return (args: any[]) => {
+      return estimate(...args, { value: args[3] }).then(estimatedGasLimit =>
         method(...args, {
+          value: args[3],
           gasLimit: calculateGasMargin(estimatedGasLimit)
         })
       )
+    }
   }, [estimate, method])
 }

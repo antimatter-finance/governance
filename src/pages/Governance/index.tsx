@@ -14,8 +14,7 @@ import { GovernanceData, useGovernanceList } from '../../hooks/useGovernanceDeta
 // import Loader from 'assets/svg/antimatter_background_logo.svg'
 import { Timer } from 'components/Timer/intex'
 import useTheme from 'hooks/useTheme'
-import { GOVERNANCE_TOKEN } from '../../constants'
-import { useCurrencyBalance } from 'state/wallet/hooks'
+import { useETHBalances } from 'state/wallet/hooks'
 import { isAddress, shortenAddress } from 'utils'
 import { ellipsis } from 'polished'
 import { Box } from '@material-ui/core'
@@ -143,7 +142,7 @@ export default function Governance() {
   const { list: governanceList } = useGovernanceList()
   const [isCreationOpen, setIsCreationOpen] = useState(false)
   const history = useHistory()
-  const balance = useCurrencyBalance(account ?? undefined, GOVERNANCE_TOKEN)
+  const balance = useETHBalances([account ?? undefined])[account || 0]
 
   const handleOpenCreation = useCallback(() => {
     setIsCreationOpen(true)

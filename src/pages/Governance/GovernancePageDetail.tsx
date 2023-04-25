@@ -15,17 +15,15 @@ import Modal from 'components/Modal'
 import { useGovernanceDetails, useUserStaking } from '../../hooks/useGovernanceDetail'
 import { CurrencyAmount, JSBI, TokenAmount } from '@uniswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
-import { GOVERNANCE_ADDRESS, GOVERNANCE_TOKEN, FACTORY_CHAIN_ID } from '../../constants'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
+import { GOVERNANCE_TOKEN, FACTORY_CHAIN_ID } from '../../constants'
+import { useETHBalances } from '../../state/wallet/hooks'
 import { useWeb3React } from '@web3-react/core'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import { useGovernanceContract } from 'hooks/useContract'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
 import { getDeltaTime, Timer } from 'components/Timer/intex'
-import { Dots } from 'components/swap/styleds'
 import { isAddress, shortenAddress } from 'utils'
 import CopyHelper from 'components/AccountDetails/Copy'
 import { Badge, Box } from '@material-ui/core'
@@ -139,7 +137,7 @@ export default function GovernancePageDetail({
   const [voteValue, setVoteValue] = useState('')
   const history = useHistory()
   const { data } = useGovernanceDetails(governanceIndex ?? '')
-  const balance = useCurrencyBalance(account ?? undefined, GOVERNANCE_TOKEN)
+  const balance = useETHBalances([account ?? undefined])[account || 0]
   const contact = useGovernanceContract()
   const addTransaction = useTransactionAdder()
   const userStaking = useUserStaking(governanceIndex)
@@ -194,7 +192,9 @@ export default function GovernancePageDetail({
     setAttemptingTxn(true)
 
     contact
-      .vote(...args, {})
+      .vote(...args, {
+        value: args[2]
+      })
       .then((response: TransactionResponse) => {
         setAttemptingTxn(false)
         addTransaction(response, {
@@ -246,8 +246,6 @@ export default function GovernancePageDetail({
   const enoughBalance = useMemo(() => {
     return balance && inputValue && !balance.lessThan(inputValue)
   }, [inputValue, balance])
-
-  const [approval, approveCallback] = useApproveCallback(inputValue, GOVERNANCE_ADDRESS)
 
   const claimBtn = useMemo(() => {
     const ret = {
@@ -328,25 +326,11 @@ export default function GovernancePageDetail({
       return ret
     }
 
-    if (approval !== ApprovalState.APPROVED) {
-      ret.event = approveCallback
-      ret.text =
-        approval === ApprovalState.PENDING ? (
-          <>
-            Allow Amitmatter to use your Matter<Dots>Loading</Dots>
-          </>
-        ) : (
-          <>Allow Amitmatter to use your Matter</>
-        )
-      ret.disable = !!(approval === ApprovalState.PENDING)
-      return ret
-    }
-
     ret.text = <>submit</>
     ret.event = handleSubmit
     ret.disable = false
     return ret
-  }, [inputValue, enoughBalance, data, approval, handleSubmit, approveCallback, chainId])
+  }, [inputValue, enoughBalance, data, handleSubmit, chainId])
 
   if (!data) {
     return null
