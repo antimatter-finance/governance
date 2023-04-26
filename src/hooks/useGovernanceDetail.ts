@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGovernanceContract } from './useContract'
 import { useSingleCallResult, useSingleContractMultipleData } from '../state/multicall/hooks'
 import { calculateGasMargin } from 'utils'
-import { addMockList } from './useMock'
 export interface GovernanceContent {
   summary: string
   details: string
@@ -137,7 +136,7 @@ export function useGovernanceList(): { list: GovernanceData[] | undefined; loadi
         .reverse(),
     [proposesListRes, proposesStatusRes]
   )
-  return { list: isLoading.current && first ? [] : [...list, ...addMockList()], loading: isLoading.current }
+  return { list: isLoading.current && first ? [] : [...list], loading: isLoading.current }
 }
 
 export function useUserStaking(proposeid: string | number | undefined): Users {
