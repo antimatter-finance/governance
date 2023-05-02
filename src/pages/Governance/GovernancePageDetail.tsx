@@ -437,8 +437,8 @@ export default function GovernancePageDetail({
                       </Text>
                       <Text>Executive Summary:</Text>
                       <Text>
-                        If this executive proposal passes, the following changes will occur within Antimatter: - 5% of
-                        the total token supply will be burned
+                        If this executive proposal passes, the following changes will occur within Antimatter: 5% of the
+                        total token supply will be burned
                       </Text>
                       <Text>
                         Voting for this executive proposal will place your MATTER in support of the changes and
