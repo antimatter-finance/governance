@@ -52,7 +52,13 @@ export function useGovernanceDetails(index: string) {
     voteFor: result ? result.yes.toString() : '',
     voteAgainst: result ? result.no.toString() : '',
     totalVotes: result ? result.totalStake.toString() : '',
-    contents: result ? JSON.parse(result.content) : undefined,
+    contents: result
+      ? JSON.parse(
+          Number(index) === 0
+            ? `{"summary":"","details":"Details: 5,000,000 $MATTER tokens are to be sent to the \\"zero\\" address, effectively burning them. The tokens are taken from the 'Protocol Reward' fund (0x04EEaF041bEb5F977811D6CAEF2D82f1A82Fc5c1) and are therefore out-of-circulation. There could be more token burn proposals in the future. Review: Community debate on these topics can be found on the Antimatter forum. Please review any linked threads to inform your position before voting. https://forum.antimatter.finance/t/matter-burn-open-discussion-about-the-burning-of-the-total-supply-of-matter-tokens/127","agreeFor":"Yes, I want a 5% token burn","againstFor":"No, I don't want a 5% token burn"}`
+            : result.content
+        )
+      : undefined,
     status: resultRes.result
       ? resultRes.result.toString() === '1'
         ? StatusOption.Success
@@ -94,6 +100,12 @@ export function useGovernanceList(): { list: GovernanceData[] | undefined; loadi
     () =>
       proposesListRes
         .map(({ result, loading }, index) => {
+          if (!result?.content) return null
+          const content = JSON.parse(
+            index === 0
+              ? `{"summary":"","details":"Details: 5,000,000 $MATTER tokens are to be sent to the \\"zero\\" address, effectively burning them. The tokens are taken from the 'Protocol Reward' fund (0x04EEaF041bEb5F977811D6CAEF2D82f1A82Fc5c1) and are therefore out-of-circulation. There could be more token burn proposals in the future. Review: Community debate on these topics can be found on the Antimatter forum. Please review any linked threads to inform your position before voting. https://forum.antimatter.finance/t/matter-burn-open-discussion-about-the-burning-of-the-total-supply-of-matter-tokens/127","agreeFor":"Yes, I want a 5% token burn","againstFor":"No, I don't want a 5% token burn"}`
+              : result.content
+          )
           isLoading.current = loading
           const title: string = result?.subject
           const creator: string = result?.creator
@@ -101,10 +113,10 @@ export function useGovernanceList(): { list: GovernanceData[] | undefined; loadi
           const voteFor: string = result?.yes.toString()
           const voteAgainst: string = result?.no.toString()
           const totalVotes: string = result?.totalStake.toString()
-          const summary: string = result ? JSON.parse(result?.content).summary : ''
-          const details: string = result ? JSON.parse(result?.content).details : ''
-          const agreeFor: string = result ? JSON.parse(result?.content).agreeFor : ''
-          const againstFor: string = result ? JSON.parse(result?.content).againstFor : ''
+          const summary: string = result ? content.summary : ''
+          const details: string = result ? content.details : ''
+          const agreeFor: string = result ? content.agreeFor : ''
+          const againstFor: string = result ? content.againstFor : ''
           let status: StatusOption = StatusOption.Live
           if (proposesStatusRes && proposesStatusRes[index] && proposesStatusRes[index].result) {
             const _status = proposesStatusRes[index].result ?? '2'
@@ -133,7 +145,8 @@ export function useGovernanceList(): { list: GovernanceData[] | undefined; loadi
             status
           }
         })
-        .reverse(),
+        .filter(v => v)
+        .reverse() as GovernanceData[],
     [proposesListRes, proposesStatusRes]
   )
   return { list: isLoading.current && first ? [] : [...list], loading: isLoading.current }

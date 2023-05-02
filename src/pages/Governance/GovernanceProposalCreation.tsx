@@ -146,9 +146,16 @@ export default function GovernanceProposalCreation({ onDismiss, isOpen }: { onDi
     const _span =
       activeStep !== 10 ? JSBI.BigInt((activeStep + 3) * 60 * 60 * 24).toString() : JSBI.BigInt(5 * 60).toString()
 
+    const content = {
+      summary: input.summary,
+      details: input.details,
+      agreeFor: input.agreeFor,
+      againstFor: input.againstFor
+    }
+
     const args = [
       input.title,
-      `{"summary":"${input.summary}","details":"${input.details}","agreeFor":"${input.agreeFor}","againstFor":"${input.againstFor}"}`,
+      JSON.stringify(content),
       _span,
       tryParseAmount(
         JSBI.BigInt(stakeAmount).toString(),
