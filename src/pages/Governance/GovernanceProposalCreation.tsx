@@ -226,12 +226,12 @@ export default function GovernanceProposalCreation({ onDismiss, isOpen }: { onDi
             name="title"
             formHelperText="Keep it below 10 words"
           />
-          <TextInput
+          {/* <TextInput
             label={fields.description}
             placeholder="What will be done if the proposal is implement"
             name="description"
             formHelperText="Keep it below 200 words"
-          />
+          /> */}
           <TextInput
             label={fields.details}
             placeholder="Write a Longer motivation with links and references if necessary"

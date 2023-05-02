@@ -69,6 +69,10 @@ const BackButtonWrapper = styled(RowBetween)`
   width:100%`}
 `
 
+const Text = styled.p`
+  margin: 0px;
+`
+
 const VoteOptionCard = styled.div<{ selected?: boolean; disabled?: boolean }>`
   border-radius: 14px;
   border: 1px solid ${({ theme, selected, disabled }) => (selected && !disabled ? theme.primary1 : theme.text4)};
@@ -425,12 +429,51 @@ export default function GovernancePageDetail({
             <Box marginTop={'50px'}>
               <DirectionChangeWrapper style={{ gap: 20 }}>
                 <AutoColumn gap="28px" style={{ width: '100%' }}>
-                  <TYPE.body lineHeight="25px" textAlign="center" style={{ wordBreak: 'break-all' }}>
-                    {contents?.summary}
-                  </TYPE.body>
-                  <TYPE.body lineHeight="25px" textAlign="center" style={{ wordBreak: 'break-all' }}>
-                    {contents?.details}
-                  </TYPE.body>
+                  {Number(id) === 0 && (
+                    <TYPE.body lineHeight="25px" style={{ wordBreak: 'break-all' }}>
+                      <Text>
+                        Antimatter DAO has placed an executive proposal into the voting system. MATTER Holders should
+                        vote for this proposal if they support the following alterations to the Antimatter Tokenomics.
+                      </Text>
+                      <Text>Executive Summary:</Text>
+                      <Text>
+                        If this executive proposal passes, the following changes will occur within Antimatter: - 5% of
+                        the total token supply will be burned
+                      </Text>
+                      <Text>
+                        Voting for this executive proposal will place your MATTER in support of the changes and
+                        additions outlined above.
+                      </Text>
+                      <Text>
+                        {' '}
+                        If this executive proposal does not pass within 7 days, then it will expire and can no longer
+                        have any effect on Antimatter.
+                      </Text>
+                    </TYPE.body>
+                  )}
+                  {Number(id) === 0 ? (
+                    <TYPE.body lineHeight={1.4} style={{ wordBreak: 'break-all' }}>
+                      <Text>
+                        Details: 5,000,000 $MATTER tokens are to be sent to the "zero" address, effectively burning
+                        them. The tokens are taken from the 'Protocol Reward' fund
+                        (0x04EEaF041bEb5F977811D6CAEF2D82f1A82Fc5c1) and are therefore out-of-circulation.
+                      </Text>
+                      <Text>
+                        There could be more token burn proposals in the future. Review: Community debate on these topics
+                        can be found on the Antimatter forum.
+                      </Text>
+                      <Text>
+                        Please review any linked threads to inform your position before voting.
+                        <a href="https://forum.antimatter.finance/t/matter-burn-open-discussion-about-the-burning-of-the-total-supply-of-matter-tokens/127">
+                          https://forum.antimatter.finance/t/matter-burn-open-discussion-about-the-burning-of-the-total-supply-of-matter-tokens/127
+                        </a>
+                      </Text>
+                    </TYPE.body>
+                  ) : (
+                    <TYPE.body lineHeight={1.4} textAlign="center" style={{ wordBreak: 'break-all' }}>
+                      {contents?.details}
+                    </TYPE.body>
+                  )}
                 </AutoColumn>
                 <Card color={theme.bg3}>
                   <AutoColumn style={{ width: '100%' }} gap="16px">
