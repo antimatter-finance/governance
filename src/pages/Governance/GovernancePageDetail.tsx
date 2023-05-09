@@ -269,6 +269,12 @@ export default function GovernancePageDetail({
       return ret
     }
 
+    if (JSBI.greaterThan(JSBI.BigInt(userStaking.totalStake), JSBI.BigInt(0))) {
+      ret.disable = false
+      ret.text = <>Claim</>
+      return ret
+    }
+
     if (account !== data.creator) {
       ret.disable = true
       ret.text = <>Close</>
@@ -277,7 +283,7 @@ export default function GovernancePageDetail({
 
     if (!JSBI.greaterThan(JSBI.BigInt(userStaking.totalStake), JSBI.BigInt(0))) {
       ret.disable = true
-      ret.text = <>Claimd</>
+      ret.text = <>Claimed</>
       return ret
     }
 
@@ -341,6 +347,8 @@ export default function GovernancePageDetail({
   }
 
   const { creator, title, voteFor, status, contents, voteAgainst, totalVotes, timeLeft, id } = data
+  console.log(creator, status)
+
   const disabled = 'Live' !== status
   const voteForPercentage = `${calcVoteForPercentage(VoteOption.FOR, voteFor, voteAgainst)}%`
   const voteAgainstPercentage = `${calcVoteForPercentage(VoteOption.AGAINST, voteFor, voteAgainst)}%`
